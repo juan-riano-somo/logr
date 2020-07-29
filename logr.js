@@ -131,8 +131,12 @@
    * @param {Number} level the level to set the instance to
    */
   Log.prototype.setLevel = function(level) {
-    if (root.sessionStorage) {
-      root.sessionStorage.setItem("logr:" + this.logname + ":level", level);
+    try{
+      if (root.sessionStorage) {
+        root.sessionStorage.setItem("logr:" + this.logname + ":level", level);
+      }
+    }catch(e){
+      console.log('Session storage is blocked')
     }
     this.level = level;
     this.init();
@@ -147,10 +151,16 @@
    * @return {Number} the level to set the instance to
    */
   Log.prototype.getLevel = function() {
-    if (root.sessionStorage) {
-      sessionLevel = root.sessionStorage.getItem("logr:" + this.logname + ":level");
+    let defaultLevel = this.level || Logr.currentLevel;
+    try{
+      if (root.sessionStorage) {
+        sessionLevel = root.sessionStorage.getItem("logr:" + this.logname + ":level");
+      }
+      return sessionLevel || defaultLevel;
+    }catch(e){
+      console.log('Session storage is blocked')
     }
-    return sessionLevel || this.level || Logr.currentLevel;
+    return defaultLevel;
   };
   /**
    * Attach logging instance to object
